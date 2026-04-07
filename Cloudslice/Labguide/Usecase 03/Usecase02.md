@@ -1,4 +1,4 @@
-## Usecase 02- Build Fabric Data Agent using Mirrored Azure SQL Database in Microsoft Fabric
+## Usecase 03- Build Fabric Data Agent using Mirrored Azure SQL Database in Microsoft Fabric
 
 **Introduction**
 
