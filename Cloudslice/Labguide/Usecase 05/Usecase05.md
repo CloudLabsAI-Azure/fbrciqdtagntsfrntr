@@ -1,4 +1,4 @@
-## Usecase 04-Integrate Fabric Data Agent with Microsoft Teams for actionable insights and agent-to-agent collaboration using Copilot Studio
+## Usecase 05-Integrate Fabric Data Agent with Microsoft Teams for actionable insights and agent-to-agent collaboration using Copilot Studio
 
 **Introduction**
 
