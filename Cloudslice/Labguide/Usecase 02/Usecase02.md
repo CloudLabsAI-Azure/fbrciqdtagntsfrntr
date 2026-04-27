@@ -1,6 +1,6 @@
-## Usecase 02- Build sales analytics with AdventureWorks dataset using Fabric data agent
+# Usecase 02- Build sales analytics with AdventureWorks dataset using Fabric data agent
 
-**Introduction**
+## Introduction
 
 Contoso Analytics, a retail insights team, is transitioning its
 reporting workflows to **Microsoft Fabric** to improve data
@@ -32,7 +32,7 @@ questions like *“Show me today’s sales for the south region”* or
 *“Identify the lowest‑stock products across all stores”* and receive
 data‑driven answers instantly.
 
-**Objectives**
+## Objectives
 
 - Build a **Fabric Lakehouse** and load AdventureWorks datasets
   programmatically using notebooks.

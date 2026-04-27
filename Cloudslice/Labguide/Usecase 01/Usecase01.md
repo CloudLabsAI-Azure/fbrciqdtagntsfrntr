@@ -1,6 +1,6 @@
-# Use Case 1 - Build connected data models with Fabric IQ Ontology​
+# UseCase 01 - Build connected data models with Fabric IQ Ontology​
 
-**Introduction**
+## Introduction
 
 In modern data platforms, enterprises often need a **business-centric
 semantic layer** that unifies meaning across diverse data sources and
@@ -19,7 +19,7 @@ Eventhouse) to these concepts so the ontology can support **cross-domain
 reasoning and queries**, for instance: *“Which stores have lower ice
 cream sales when freezer temperature rises above –18 °C?”*
 
-**Objectives**
+## Objectives
 
 - Prepare a Microsoft Fabric workspace with required services, including
   Lakehouse, Eventhouse, and Ontology (preview).
@@ -642,39 +642,35 @@ incorrect.](media/image91.png)
 ## Task 2: Bind static data to properties
 
 Next, bind static data to the properties you created on
-the *Freezer* entity type.
+the **Freezer** entity type.
 
-1.  In the **Entity type configuration** pane, go to
-    the **Bindings** tab. Select **Add data to entity type**.
+1. In the **Entity type configuration** pane, go to the **Bindings** tab. Select **Add data to entity type**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image92.png)
 
-2.  From **OneLake catalog**, select the **IQ_Lakehouse** Lakehouse
-    and click **Connect** to establish the data connection.
+2. From **OneLake catalog**, select the **IQ_Lakehouse** Lakehouse and click **Connect** to establish the data connection.
+
      ![A screenshot of a computer AI-generated content may be
     incorrect.](media/image93.png)
 
-4.  Select the **freezer** table from the **IQ_Lakehouse** data source,
-    then click **Next** to proceed to the data binding step
+4. Select the **freezer** table from the **IQ_Lakehouse** data source, then click **Next** to proceed to the data binding step
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image94.png)
 
-5.  Configure a static data binding for the properties.
+5. Configure a static data binding for the properties.
 
-    a.  For **Binding type**, use the default selection of **Static**.
+    a. For **Binding type**, use the default selection of **Static**.
 
-    b.  Under **Bind your properties**, the properties you created
-        populate automatically with links to matching columns from
-        the *freezer* table.
+    b. Under **Bind your properties**, the properties you created populate automatically with links to matching columns from the **freezer** table.
 
-    c.  Select **Save**.
+    c. Select **Save**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image95.png)
 
-6.  Now the **Freezer** entity has static data bound to it.
+6. Now the **Freezer** entity has static data bound to it.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image96.png)
@@ -685,51 +681,49 @@ Next, add time series data on the **Freezer **entity, by creating new
 properties and binding time series data to them in a single data binding
 operation.
 
-1.  In the **Entity type configuration** pane's **Bindings** tab,
+1. In the **Entity type configuration** pane's **Bindings** tab,
     select **Add data to entity type**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image97.png)
 
-2.  From **OneLake catalog**, select the **TelemetryDataEH** Eventhouse
+2. From **OneLake catalog**, select the **TelemetryDataEH** Eventhouse
     and click **Connect** to establish the data connection.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image98.png)
 
-3.  Select the **Freezer Telemetry** table from the **TelemetryDataEH data source** data source,
+3. Select the **Freezer Telemetry** table from the **TelemetryDataEH data source** data source,
     then click **Next** to proceed to the data binding step.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image99.png)
 
-4.  Configure a time series data binding.
+4. Configure a time series data binding.
 
-    1.  For **Binding type**, keep the default selection
-        of **Timeseries**. For **Source data timestamp column**,
-        select timestamp.
+    1. For **Binding type**, keep the default selection of **Timeseries**. For **Source data timestamp column**, select timestamp.
 
-    2.  Under **Bind your properties \Static**, two source data columns populate that match static properties already defined on
+    2. Under **Bind your properties \Static**, two source data columns populate that match static properties already defined on
     the entity. Keep them as they are.
 
         ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image100.png)
 
-3.  Under **Bind your properties \Timeseries**, the time series
+    3. Under **Bind your properties \Timeseries**, the time series
     columns from the **FreezerTelemetry**table populate automatically
     with matching property names for the *Freezer* entity type. Keep the
     default selections.
 
-4.  Select **Save**.
+    4. Select **Save**.
 
-    ![A screenshot of a computer AI-generated content may be
+        ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image101.png)
 
-5.  Now the ***Freezer* entity** has two data bindings: one with
+    5.  Now the ***Freezer* entity** has two data bindings: one with
     **static** data from the ***freezer* lakehouse** table and one with
     streaming data from the **FreezerTelemetry** eventhouse table.
 
-    ![A screenshot of a computer AI-generated content may be
+        ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image102.png)
 
 ## Task 4: Add relationship type
