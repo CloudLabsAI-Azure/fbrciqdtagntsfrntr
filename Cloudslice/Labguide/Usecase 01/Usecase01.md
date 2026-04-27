@@ -1088,30 +1088,7 @@ initialize. Then, run the queries again.
 Continue exploring the data agent by trying out some prompts of your
 own.
 
-**Task 7: Clean up resources**
-
-1.  Select your workspace, the **Fabric IQ OntologyXX** from the
-    left-hand navigation menu. It opens the workspace item view.
-
-    ![A screenshot of a computer AI-generated content may be
-incorrect.](media/image152.png)
-
-2.  Select the ... option under the workspace name and select
-    **Workspace settings**.
-
-    ![A screenshot of a computer AI-generated content may be
-incorrect.](media/image153.png)
-
-3.  Navigate to the bottom of the General tab and select **Remove this
-    workspace**.
-
-    ![A screenshot of a computer AI-generated content may be
-incorrect.](media/image154.png)
-
-    ![A screenshot of a computer AI-generated content may be
-incorrect.](media/image155.png)
-
-**Summary**
+## Summary
 
 This use case demonstrates how Microsoft Fabric IQ Ontology (preview)
 can be used to create a connected, semantic data model that represents
