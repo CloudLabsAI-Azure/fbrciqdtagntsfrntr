@@ -239,10 +239,11 @@ incorrect.](media/image29.png)
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image30.png)
 
-3. The eventhouse opens when it's ready    ![A screenshot of a computer
-    AI-generated content may be incorrect.](media/image31.png)
+3. The eventhouse opens when it's ready    
 
-4.  Open the KQL database by selecting its name.
+![A screenshot of a computer AI-generated content may be incorrect.](media/image31.png)
+
+4. Open the KQL database by selecting its name.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image32.png)
@@ -250,14 +251,12 @@ incorrect.](media/image32.png)
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image33.png)
 
-5.  On the lower ribbon of your **KQL database**, click on **Get data**,
-    then select **Local file** to upload files from your local system
-    into the database.
+5.  On the lower ribbon of your **KQL database**, click on **Get data**, then select **Local file** to upload files from your local system into the database.
+
     ![A screenshot of a computer AI-generated content
     may be incorrect.](media/image34.png)
 
-7.  Select the target option to ingest data into a new table, click +
-    New table, and enter a table name as **FreezerTelemetry**.
+7. Select the target option to ingest data into a new table, click +New table, and enter a table name as **FreezerTelemetry**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image35.png)
@@ -265,19 +264,18 @@ incorrect.](media/image35.png)
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image36.png)
 
-8.  Select the destination table, then drag and drop the files or click
+8. Select the destination table, then drag and drop the files or click
     *Browse for files* to upload the data.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image37.png)
 
-9.  Browse to **C:\Lab Files\Cloud_slice\LabFiles\Lab1** on your VM, then
-    select ***FreezerTelemetry*.csv** file and click on **Open** button.
+9.  Browse to **C:\Lab Files\Cloud_slice\LabFiles\Lab1** on your VM, then select ***FreezerTelemetry*.csv** file and click on **Open** button.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image38.png)
 
-10.  Click on **Next** button
+10. Click on **Next** button
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image39.png)
@@ -374,19 +372,15 @@ incorrect.](media/image51.png)
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image52.png)
 
-6.  Configure a static data binding for the following properties.
+6. Configure a static data binding for the following properties.
 
-    a)  For **Binding type**, don't change the default selection
-        of **Static**.
+    a) For **Binding type**, don't change the default selection of **Static**.
 
-    b)  Under **Bind your properties**, the columns from
-        the **dimstore** table populate automatically. The **Source
-        column** side lists their names in the source data, and
-        the **Property name** side lists their corresponding property
-        names on the *Store* entity type within ontology. Don't change
-        the default property names, which match the source column names.
+    b) Under **Bind your properties**, the columns from the **dimstore** table populate automatically. The **Source column** side lists their names in the source data, and
+    the **Property name** side lists their corresponding property names on the *Store* entity type within ontology. Don't change
+    the default property names, which match the source column names.
 
-    c)  Select **Save**.
+    c) Select **Save**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image53.png)
@@ -394,36 +388,31 @@ incorrect.](media/image53.png)
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image54.png)
 
-7.  Back in the **Entity type configuration** pane, the data binding is
-    visible. Next, select **Add entity type key**.
+7. Back in the **Entity type configuration** pane, the data binding is visible. Next, select **Add entity type key**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image55.png)
 
-8.  Select **StoreId** as the key property and select **Save**.
+8. Select **StoreId** as the key property and select **Save**.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image56.png)
 
-9.  Now the **Store** entity type is ready. Continue to the next section
-    to create the remaining entity types.
+9. Now the **Store** entity type is ready. Continue to the next section to create the remaining entity types.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image57.png)
 
-	### Add other entity types (Products, SaleEvent)
+### Add other entity types (Products, SaleEvent)
 
-10. Follow the same steps that you used for the **Store** entity type to
-    create the entity types described in the following table. Each
-    entity has a static data binding with the default columns from its
-    source table.
+10. Follow the same steps that you used for the **Store** entity type to create the entity types described in the following table. Each
+entity has a static data binding with the default columns from its source table.
 
 	|  |   |   |
 	|---|---|---|
 	|Entity type name|	Source table in IQ_Lakehouse	|Entity type key|
 	|Products|  |dimproducts	|ProductId|
 	|SaleEvent	|factsales	|SaleId|
-
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image58.png)
@@ -476,8 +465,7 @@ incorrect.](media/image73.png)
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image74.png)
 
-11. When you're done, you see these entity types listed in the **Entity
-    Types** pane.
+11. When you're done, you see these entity types listed in the **Entity Types** pane.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image75.png)
@@ -489,12 +477,12 @@ contextual connections in your data.
 
 **Store has SaleEvent**
 
-1.  Select **Add relationship** from the menu ribbon.
+1. Select **Add relationship** from the menu ribbon.
 
     ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image76.png)
 
-2.  Enter the following relationship type details and select **Add
+2. Enter the following relationship type details and select **Add
     relationship type**.
 
 	- **Relationship type name**: has
@@ -506,31 +494,19 @@ incorrect.](media/image76.png)
         ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image77.png)
 
-3.  The **Relationship configuration** pane opens, where you can
-    configure additional information. Enter the following details (some
-    fields become visible based on other selections) and
-    select **Create**.
+3. The **Relationship configuration** pane opens, where you can configure additional information. Enter the following details (some
+fields become visible based on other selections) and select **Create**.
 
-    1.  **Source data**: Select your tutorial workspace,
-        the **IQ_Lakehouse**  lakehouse, and the **factsales** table.
-        This table in the source data can
-        link **Store **and **SaleEvent** entities together, because it
-        contains identifying information for both entity types. Each row
-        in this table references a store and a sale event by ID.
+    1. **Source data**: Select your tutorial workspace, the **IQ_Lakehouse**  lakehouse, and the **factsales** table. This table in the source data can link **Store** and **SaleEvent** entities together, because it
+    contains identifying information for both entity types. Each row in this table references a store and a sale event by ID.
 
-    1.  **Source entity type \Source column**: Select **StoreId**.
-        This setting specifies the column in the relationship source
-        data table (*factsales \* StoreId) whose values match the key
-        property defined on the *Store* entity (*dimstore \* StoreId).
-        In the tutorial data, the column name is the same in both
-        tables.
+    1. **Source entity type \Source column**: Select **StoreId**. This setting specifies the column in the relationship source
+    data table (*factsales \* StoreId) whose values match the key property defined on the *Store* entity (*dimstore \* StoreId).
+    In the tutorial data, the column name is the same in both tables.
 
-    1.  **Target entity type \Source column**: Select SaleId. This
-        setting specifies the column in the relationship source data
-        table whose values match the key property defined on
-        the **SaleEvent** entity. In this case, the relationship data
-        source and the entity data source both use
-        the **factsales** table, so you're selecting the same column.
+    1. **Target entity type \Source column**: Select SaleId. This setting specifies the column in the relationship source data
+    table whose values match the key property defined on the **SaleEvent** entity. In this case, the relationship data
+    source and the entity data source both use the **factsales** table, so you're selecting the same column.
 
         ![A screenshot of a computer AI-generated content may be
 incorrect.](media/image78.png)
