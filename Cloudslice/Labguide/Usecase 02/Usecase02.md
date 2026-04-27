@@ -34,9 +34,6 @@ data‑driven answers instantly.
 
 **Objectives**
 
-- Create a **Microsoft Fabric workspace** and configure storage and
-  permissions.
-
 - Build a **Fabric Lakehouse** and load AdventureWorks datasets
   programmatically using notebooks.
 
@@ -51,608 +48,443 @@ data‑driven answers instantly.
 
 - Clean up and delete the workspace after completing the lab.
 
-## **Task 0: Sync Host environment time**
 
-1.  In your VM, navigate and click in the **Search bar**, type
-    **Settings** and then click on **Settings** under **Best match**.
+## Task 1: Create a lakehouse with AdventureWorksLH
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image1.png)
+In this task, you will create a new Lakehouse and populate it with AdventureWorks tables using a Fabric notebook, establishing a structured data foundation that the Data Agent can query.
 
-2.  On Settings window, navigate and click on **Time & language**.
+1. In the workspace home page, click on the **+New item** button in the navigation bar t create a new lakehouse.
 
-![A screenshot of a computer Description automatically
-generated](./media/image2.png)
+    ![](./media/image15.png)
 
-3.  On **Time & language** page, navigate and click on **Date & time**.
+1. In the **New item** window, search for **Lakehouse (1)** in the search bar and select **Lakehouse (2)** from the results to create a new Lakehouse item.
 
-![A screenshot of a computer Description automatically
-generated](./media/image3.png)
+    ![](./media/uc1-6.png)
 
-4.  Scroll down and navigate to **Additional settings** section, then
-    click on **Syn now** button. It will take 3-5 minutes to syn.
+1. In the **New lakehouse** dialog box, enter the following name in the **Name** field:
 
-![A screenshot of a computer Description automatically
-generated](./media/image4.png)
+1. In the **New lakehouse** dialog box, enter **AdventureWorksLH (1)** in the **Name** field, and leave **Lakehouse schemas (2)** unchecked. Click **Create (3)** to proceed.
 
-5.  Close the **Settings** window.
+    ![](./media/image17.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image5.png)
+    ![](./media/image18.png)
 
-## Task 1: **Create a Fabric workspace**
+1. You will see a notification stating **Successfully created SQL endpoint**.
 
-In this task, you will set up the foundational environment by creating a
-Fabric workspace that will host the Lakehouse, notebooks, and the Data
-Agent. This workspace acts as the central container for all assets used
-throughout the use case.
+    ![](./media/image19.png)
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL:+++https://app.fabric.microsoft.com/+++ then press
-    the **Enter** button.
+1. In the **Lakehouse** page, click **Open notebook (1)** and select **New notebook (2)** to create your Fabric data agent.
 
-![](./media/image6.png)
+    ![](./media/image20.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+1. In your notebook, use the **+ Code (1)** icon to add a new code cell to the notebook.
 
-    |  |   |
-    |---|----|
-    |Username	|+++@lab.CloudPortalCredential(User1).Username+++|
-    |TAP	|+++@lab.CloudPortalCredential(User1).AccessToken+++|
+1. Enter the following code in the cell **(2)**. Select the code cell and click on the **Run cell (3)** button to execute cell. Monitor the **Spark job progress and completion status** in the output section to ensure all tables are successfully uploaded to the Lakehouse.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image7.png)
+    ```
+    import pandas as pd
+    from tqdm.auto import tqdm
+    base = "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button.
+    # load list of tables
+    df_tables = pd.read_csv(f"{base}/adventureworks.csv", names=["table"])
 
-> ![A login screen with a red box and blue text AI-generated content may
-> be incorrect.](./media/image8.png)
+    for table in (pbar := tqdm(df_tables['table'].values)):
+        pbar.set_description(f"Uploading {table} to lakehouse")
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+        # download
+        df = pd.read_parquet(f"{base}/{table}.parquet")
 
-&nbsp;
+        # save as lakehouse table
+        spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
+    ```
 
-5.  You’ll be directed to Power BI Home page.
+    ![](./media/new1.png)
 
-> ![](./media/image9.png)
+    > **Note:** Wait until the progress reaches 100%.    
 
-6.  Fabric home page, select **+New workspace** tile.
+1. Expand the **AdventureWorksLH (1)** Lakehouse , expand the **Tables (2)** folder, click on the **ellipsis (⋯) (3)** next to Tables, and select **Refresh (4)** to load and verify that all newly created tables are successfully loaded into the Lakehouse.
 
-> ![](./media/image10.png)
+    ![](./media/new2.png)
 
-7.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
-
-| Property | Value |
-|---------|-------|
-| Name | **+++Fabric Data agent-@lab.LabInstance.Id+++** **(must be a unique Id)** |
-| Advanced | Under **License mode**, select **Fabric** |
-| Default storage format | Small dataset storage format |
-| Template apps | Check **Develop template apps** |
-
-![](./media/image11.png)
-
-Note: To find your lab instant ID, select 'Help' and copy the instant
-ID.
-
-![A screenshot of a computer Description automatically
-generated](./media/image12.png)
-
-> ![](./media/image13.png)
-
-8.  Wait for the deployment to complete. It takes 1-2 minutes to
-    complete.
-
-> ![](./media/image14.png)
-
-## Task 2: Create a lakehouse with AdventureWorksLH
-
-This task guides you through creating a new Lakehouse and populating it
-with AdventureWorks tables using a Fabric notebook. The Lakehouse
-becomes the structured data foundation that the Data Agent will query.
-
-1.  Create a new lakehouse by clicking on the **+New item** button in
-    the navigation bar.
-
-![](./media/image15.png)
-
-2.  Click on the "**Lakehouse**" tile.
-
-![](./media/image16.png)
-
-3.  In the **New lakehouse** dialog box,
-    enter +++**AdventureWorksLH+++** in the **Name** field, click on
-    the **Create** button and open the new lakehouse.
-
-**Note**: Ensure to remove space before **AdventureWorksLH**
-
-![](./media/image17.png)
-
-![](./media/image18.png)
-
-4.  You will see a notification stating **Successfully created SQL
-    endpoint**.
-
-![](./media/image19.png)
-
-5.  Create a new notebook in the workspace where you want to create your
-    Fabric data agent.
-
-> ![](./media/image20.png)
-
-6.  Update the code in the **cell** with the following code and click
-    on **▷ Run cell** that appears to the left of the cell.
-```
-import pandas as pd
-from tqdm.auto import tqdm
-base = "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
-
-# load list of tables
-df_tables = pd.read_csv(f"{base}/adventureworks.csv", names=["table"])
-
-for table in (pbar := tqdm(df_tables['table'].values)):
-    pbar.set_description(f"Uploading {table} to lakehouse")
-
-    # download
-    df = pd.read_parquet(f"{base}/{table}.parquet")
-
-    # save as lakehouse table
-    spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
-```
-![](./media/image21.png)
-
-![](./media/image22.png)
-
-![](./media/image23.png)
-
-![](./media/image24.png)
-
-![](./media/image25.png)
-
-## Task 3: Create Data agent
+## Task 3: Create and configure a Fabric Data Agent connected to Lakehouse tables.
 
 In this task, you will create a Fabric Data Agent and connect it to the
 Lakehouse. You will select the required Dimension and Fact tables to
 enable the agent to answer a wide range of sales‑related analytics
 questions.
 
-1.  Now, click on **Fabric Data agent-XXXXXX** on the left-sided
-    navigation pane.
+1. Now, click on **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject> (1)** on the left-sided navigation pane, then select the **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject> (2)** workspace to open and see the items created.
 
-![](./media/image26.png)
+    ![](./media/image26.png)
 
-2.  In the **Fabric** home page, select **+New item.**
+1. In the workspace, Click **+ New item (1)**, search for **Data agent (2)** in the search bar, and select the **Data agent (3)** option to create a new Fabric Data Agent.
 
-![](./media/image27.png)
+    ![](./media/new4.png)
 
-3.  In the **Filter by item type** search box, enter **+++data agent+++** and select the **Data agent.**
+1. Enter **AI-agent (1)** as the Data agent name and select **Create (2)**.
 
-![](./media/image28.png)
-
-4.  Enter **+++AI-agent+++** as the Data agent name and
-    select **Create**.
-
-![A screenshot of a computer AI-generated content may be
+    ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image29.png)
 
- ![](./media/image30.png)
+1. In AI-agent page, select **Add Data (1)** and from the dropdown choose **Data source (2)**.
 
-5.  In AI-agent page, select **Add a data source**.
+    ![](./media/add-data-source.png)
 
- ![](./media/image31.png)
+1. In the **OneLake catalog** tab, select the **AdventureWorksLH (1)** and select **Add (2)**.
 
-6.  In the **OneLake catalog** tab, select the **AI-Fabric_lakehouse
-    lakehouse** and select **Add**.
+    ![](./media/adventureworks-lh.png)
 
-![](./media/image32.png)
+1. You must then select the tables for which you want the AI skill to have available access.
 
-![](./media/image33.png)
+    This lab uses the following tables:
 
-7.  You must then select the tables for which you want the AI skill to
-    have available access.
+    - DimCustomer
 
-This lab uses these tables:
+    - DimDate
 
-- DimCustomer
+    - DimGeography
 
-- DimDate
+    - DimProduct
 
-- DimGeography
+    - DimProductCategory
 
-- DimProduct
+    - DimPromotion
 
-- DimProductCategory
+    - DimReseller
 
-- DimPromotion
+    - DimSalesTerritory
 
-- DimReseller
+    - FactInternetSales
 
-- DimSalesTerritory
+    - FactResellerSales
 
-- FactInternetSales
-
-- FactResellerSales
-
-![](./media/image34.png)
+       ![](./media/image34.png)
 
 ## Task 4: Provide instructions
 
-Here, you will enrich the Data Agent by adding natural language
-questions and their corresponding SQL queries. These examples help the
-agent understand domain‑specific context and generate more accurate SQL
-responses for real‑world queries.
+In this task, you will enrich the Data Agent by adding natural language questions along with their corresponding SQL queries. These examples help the agent understand domain-specific context and generate more accurate SQL responses for real-world queries. You will add relevant question–SQL pairs, validate their accuracy, test how the agent responds to similar queries, and refine the examples to improve the agent’s performance.
 
-1.  When you first ask the questions with the listed tables
-    select **factinternetsales**, the data agent answers them fairly
-    well.
 
-2.  For instance, for the question +++**What is the most sold product?+++**
+1. Select the **factinternetsales (1)** table from the left navigation pane, enter the following prompt **(2)** in Test the agent's responses section:
 
-![](./media/image35.png)
+    ```
+    What is the most sold product?
+    ```
 
-> ![](./media/image36.png)
+1. Expand the execution details by clicking **“1 step completed” (3)**, then expand the query details **(4)**, copy the generated **SQL query (5)** and paste it into the **Notepad** for further use.
 
-3.  Copy the question and SQL queries and paste them in a notepad and
-    then Save the notepad to use the information in the upcoming tasks.
+1. Once the query is copied, click **Clear chat (6)** to reset the conversation for a new prompt.
 
-![A screenshot of a computer Description automatically
-generated](./media/image37.png)
+    ![](./media/new10.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image38.png)
+1. Select the **factresellersales (1)** table from the left navigation pane, enter the following prompt **(2)** to Test the agent's responses.
 
-4.  Select **FactResellerSales** and enter the following text and click
-    on the **Submit icon** as shown in the below image.
+    ```
+    What is our most sold product?
+    ```
 
-**+++What is our most sold product?+++**
+1. Review the **output (3)** generated, then click **Clear chat (4)** to reset the conversation for a new prompt.
 
-![A screenshot of a computer Description automatically
-generated](./media/image39.png)
+    ![A screenshot of a computer Description automatically
+generated](./media/new9.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image40.png)
+1. Select the **dimcustomer (1)** table from the left pane, enter the following prompt **(2)** to Test the agent's responses.
 
-As you continue to experiment with queries, you should add more
-instructions.
+    ```
+    how many active customers did we have June 1st, 2013?
+    ```
 
-5.  Select the **dimcustomer** , enter the following text and click on
-    the **Submit icon**
+1. Expand the execution details by clicking **“1 step completed” (3)**, review the generated SQL query which counts customers where DateFirstPurchase <= '2013-06-01' to determine active customers by expanding the query section **(4)**, copy the generated **SQL query (5)** and paste it into the **Notepad** for further use. 
 
-**+++how many active customers did we have June 1st, 2013?+++**
+1. Once the query is copied, click **Clear chat (6)** to reset the conversation for a new prompt.
 
-![A screenshot of a computer Description automatically
-generated](./media/image41.png)
+    ![A screenshot of a computer Description automatically
+generated](./media/new11.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image42.png)
+    > **Note:** Before running the next prompt, click **Clear chat (6)** to reset the conversation for better results.
 
-6.  Copy the all question and SQL queries and paste them in a notepad
-    and then Save the notepad to use the information in the upcoming
-    tasks.
+1. Select the **dimdate (1)** and **factinternetsales (2)** tables from the left pane, enter the following prompt **(3)** to Test the agent's responses.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image43.png)
+    ```
+    what are the monthly sales trends for the last year?
+    ```
 
-![A screenshot of a computer Description automatically
-generated](./media/image44.png)
+1. Expand the execution details by clicking **“1 step completed” (4)**,  and expand the query details **(5)** further where the SQL joins the tables, aggregates monthly sales, and filters for the latest year. Copy the generated **SQL query (6)** and paste it into the **Notepad** for further use. 
 
-7.  Select the **dimdate**, **FactInternetSales** , enter the following
-    text and click on the **Submit icon:**
+    ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/new12.png)
 
-**+++what are the monthly sales trends for the last year?+++**
+    > **Note:** Before running the next prompt, click **Clear chat (6)** to reset the conversation for better results.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image45.png)
+1. Select the **dimproduct (1)** and **factinternetsales (2)** tablesfrom the left pane, enter the following prompt **(3)** to Test the agent's responses.
+   
+    ```
+    which product category had the highest average sales price?
+    ```
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image46.png)
+1. Expand the execution details by clicking **“1 step completed” (4)**,  and expand the query details **(5)** further where the review shows the category with the highest average sales price. Copy the generated **SQL query (6)** and paste it into the **Notepad** for further use.
 
-8.  Select the **dimproduct,** **FactInternetSales** , enter the
-    following text and click on the **Submit icon:**
+    ![A screenshot of a computer Description automatically
+ generated](./media/new13.png)
 
-**+++which product category had the highest average sales price?+++**
+1. The relevant query is moderately complex, so provide an example by selecting the **Example queries (2)** button from the **Setup (1)** pane.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image47.png)
+    ![](./media/image49.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image48.png)
+1. In the **Example queries (1)** tab, select the **Add example (2).**
 
-Part of the problem is that "active customer" doesn't have a formal
-definition. More instructions in the notes to the model text box might
-help, but users might frequently ask this question. You need to make
-sure that the AI handles the question correctly.
+    ![](./media/image50.png)
 
-7.  The relevant query is moderately complex, so provide an example by
-    selecting the **Example queries** button from the **Setup** pane.
+1. Here, you should add Example queries for the lakehouse data source
+  that you have created. Add the **below question (1)** in the question field:
+    
+    ```
+    What is the most sold product?
+    ```
 
-> ![](./media/image49.png)
+1. For **SQL query (2)** either add the query1 that you have saved in the notepad or add the following query:
 
-8.  In the Example queries tab, select the **Add example.**
+    ```
+    SELECT TOP 1 ProductKey, SUM(OrderQuantity) AS TotalQuantitySold
+    FROM [dbo].[factinternetsales]
+    GROUP BY ProductKey
+    ORDER BY TotalQuantitySold DESC
+    ```
 
-![](./media/image50.png)
+    ![](./media/new14.png)
 
-9.  Here, you should add Example queries for the lakehouse data source
-    that you have created. Add the below question in the question field:
+1. To add a new query field, click on **+ Add (1).** Add the **below question (2)** in the question field:
 
-**+++What is the most sold product?+++**
+    ```
+    What are the monthly sales trends for the last year?
+    ```
 
-> ![](./media/image51.png)
+1. For **SQL query (3)** either add the query2 that you have saved in the notepad or add the following query:
 
-10. Add the query1 that you have saved in the notepad:
-
-```
-SELECT TOP 1 ProductKey, SUM(OrderQuantity) AS TotalQuantitySold
-FROM [dbo].[factinternetsales]
-GROUP BY ProductKey
-ORDER BY TotalQuantitySold DESC
-```
-> ![](./media/image52.png)
-
-11. To add a new query field, click on **+Add.**
-
-> ![](./media/image53.png)
-
-12. To add a second question in the question field:
-
-**+++What are the monthly sales trends for the last year?+++**
-
-![](./media/image54.png)
-
-13. Add the query3 that you have saved in the notepad:
-
-```
-SELECT
+    ```
+    SELECT
     d.CalendarYear,
     d.MonthNumberOfYear,
     d.EnglishMonthName,
     SUM(f.SalesAmount) AS TotalSales
-FROM
+    FROM
     dbo.factinternetsales f
     INNER JOIN dbo.dimdate d ON f.OrderDateKey = d.DateKey
-WHERE
+    WHERE
     d.CalendarYear = (
         SELECT MAX(CalendarYear)
         FROM dbo.dimdate
         WHERE DateKey IN (SELECT DISTINCT OrderDateKey FROM dbo.factinternetsales)
     )
-GROUP BY
+    GROUP BY
     d.CalendarYear,
     d.MonthNumberOfYear,
     d.EnglishMonthName
-ORDER BY
+    ORDER BY
     d.MonthNumberOfYear
-```
-> ![](./media/image55.png)
+    ```
 
-14. To add a new query field, click on **+Add.**
+    ![](./media/new15.png)
 
-> ![](./media/image56.png)
+1. To add a new query field, click on **+ Add (1).** Add the **below question (2)** in the question field:
 
-15. To add a third question in the question field:
+    ```
+    Which product category has the highest average sales price? 
+    ```
 
-+++Which product category has the highest average sales price?+++
+1. For **SQL query (3)** either add the query3 that you have saved in the notepad or add the following query:
 
-![](./media/image57.png)
-
-16. Add the query4 that you have saved in the notepad:
-
-```
-SELECT TOP 1
+    ```
+    SELECT TOP 1
     dp.ProductSubcategoryKey AS ProductCategory,
     AVG(fis.UnitPrice) AS AverageSalesPrice
-FROM
+    FROM
     dbo.factinternetsales fis
-INNER JOIN
+    INNER JOIN
     dbo.dimproduct dp ON fis.ProductKey = dp.ProductKey
-GROUP BY
+    GROUP BY
     dp.ProductSubcategoryKey
-ORDER BY
+    ORDER BY
     AverageSalesPrice DESC
-```
-> ![](./media/image58.png)
+    ```
 
-17. Add all the queries and SQL queries that you have saved in Notepad,
-    and then click on ‘**Export all’**
+1. Once all the questions and SQL queries are added, then click on **Export all (4)** to export the examples.
 
-> ![](./media/image59.png)
+    ![](./media/new16.png)
 
-![](./media/image60.png)
+    ![](./media/new17.png)
 
 ## Task 5: Use the Data agent programmatically
 
-Both instructions and examples were added to the Data agent. As testing
-proceeds, more examples and instructions can improve the AI skill even
-further. Work with your colleagues to see if you provided examples and
-instructions that cover the kinds of questions they want to ask.
+In this task, you will validate and enhance the Data Agent by reviewing its instructions and examples, and by using the AI skill programmatically within a Fabric notebook. You will check whether the AI skill is properly configured and confirm that a published URL is available. You will then use the AI skill within a Fabric notebook to test responses using sample queries, and refine the instructions and examples based on the results to improve its overall effectiveness.
 
-You can use the AI skill programmatically within a Fabric notebook. To
-determine whether or not the AI skill has a published URL value.
+1. In the Data agent Fabric page, in the **Home** ribbon select the **Settings gear icon**.
 
-1.  In the Data agent Fabric page, in the **Home** ribbon select
-    the **Settings**.
+   ![](./media/image61.png)
 
-> ![](./media/image61.png)
+1. Before you publish the AI-agent, navigate to **Publishing (1)** section, and verify it doesn't have a **published URL** value, click **X (2)** to close the AI-agent settings pane.
 
-2.  Before you publish the AI skill, it doesn't have a published URL
-    value, as shown in this screenshot.
+   ![](./media/new18.png)
 
-3.  Close the AI Skill setting.
+1. In the **Home** ribbon, select the **Publish**.
 
-> ![](./media/image62.png)
-
-4.  In the **Home** ribbon, select the **Publish**.
-
-> ![](./media/image63.png)
->
-> ![](./media/image64.png)
-
-5.  Click on the **View publishing details**
-
-> ![](./media/image65.png)
-
-6.  The published URL for the AI agent appears, as shown in this
-    screenshot.
-
-7.  Copy the URL and paste that in a notepad and then Save the notepad
-    to use the information in the upcoming steps.
-
-> ![](./media/image66.png)
-
-8.  Select **Notebook1** in the left navigation pane.
-
-> ![](./media/image67.png)
-
-9.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace
-    the **URL**. Click on **▷ Run** button and review the output
-
-+++%pip install "openai==1.70.0"+++
-
-> ![](./media/image68.png)
->
-> ![](./media/image69.png)
-
-10. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace
-    the **URL**. Click on **▷ Run** button and review the output
-
-+++%pip install httpx==0.27.2+++
-
-> ![](./media/image70.png)
-
-11. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace
-    the **URL**. Click on **▷ Run** button and review the output
-
-```
-import requests
-import json
-import pprint
-import typing as t
-import time
-import uuid
-
-from openai import OpenAI
-from openai._exceptions import APIStatusError
-from openai._models import FinalRequestOptions
-from openai._types import Omit
-from openai._utils import is_given
-from synapse.ml.mlflow import get_mlflow_env_config
-from sempy.fabric._token_provider import SynapseTokenProvider
+   ![](./media/image63.png)
  
-base_url = "https://<generic published base URL value>"
-question = "What datasources do you have access to?"
+   ![](./media/image64.png)
 
-configs = get_mlflow_env_config()
+1. Click on the **View publishing details.**
 
-# Create OpenAI Client
-class FabricOpenAI(OpenAI):
-    def __init__(
-        self,
-        api_version: str ="2024-05-01-preview",
-        **kwargs: t.Any,
-    ) -> None:
-        self.api_version = api_version
-        default_query = kwargs.pop("default_query", {})
-        default_query["api-version"] = self.api_version
-        super().__init__(
-            api_key="",
-            base_url=base_url,
-            default_query=default_query,
-            **kwargs,
-        )
-    
-    def _prepare_options(self, options: FinalRequestOptions) -> None:
-        headers: dict[str, str | Omit] = (
-            {**options.headers} if is_given(options.headers) else {}
-        )
-        options.headers = headers
-        headers["Authorization"] = f"Bearer {configs.driver_aad_token}"
-        if "Accept" not in headers:
-            headers["Accept"] = "application/json"
-        if "ActivityId" not in headers:
-            correlation_id = str(uuid.uuid4())
-            headers["ActivityId"] = correlation_id
+   ![](./media/image65.png)
 
-        return super()._prepare_options(options)
+1. In the Data agent Fabric page, in the **Home** ribbon select the **Settings gear icon**.
 
-# Pretty printing helper
-def pretty_print(messages):
-    print("---Conversation---")
-    for m in messages:
-        print(f"{m.role}: {m.content[0].text.value}")
-    print()
+   ![](./media/image61.png)
 
-fabric_client = FabricOpenAI()
-# Create assistant
-assistant = fabric_client.beta.assistants.create(model="not used")
-# Create thread
-thread = fabric_client.beta.threads.create()
-# Create message on thread
-message = fabric_client.beta.threads.messages.create(thread_id=thread.id, role="user", content=question)
-# Create run
-run = fabric_client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
+1. Navigate to **Publishing (1)** section, and copy the **published URL (2)** value and paste it into the Notepad for further use, then click **X (3)** to close the AI-agent settings pane.
 
-# Wait for run to complete
-while run.status == "queued" or run.status == "in_progress":
-    run = fabric_client.beta.threads.runs.retrieve(
-        thread_id=thread.id,
-        run_id=run.id,
-    )
-    print(run.status)
-    time.sleep(2)
+   ![](./media/new19.png)
 
-# Print messages
-response = fabric_client.beta.threads.messages.list(thread_id=thread.id, order="asc")
-pretty_print(response)
+1. Navigate to the **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject> (1)** workspace and select **Notebook 1 (2)** to open the notebook for further analysis or execution.
 
-# Delete thread
-fabric_client.beta.threads.delete(thread_id=thread.id)
-```
-> ![](./media/image71.png)
+   ![](./media/new-21.png)
 
-![](./media/image72.png)
+1. In your notebook, use the **+ Code (1)** icon below the output of last cell to add a new code cell to the notebook.
 
-## **Task 6: Delete the resources**
+1. Enter the following code in the cell **(2)**. Select the code cell and click on the **Run cell (3)** button to execute cell. As an Output this code will install the required OpenAI package.
 
-1.  Select your workspace, the **AI-Fabric-XXXX** from the left-hand
-    navigation menu. It opens the workspace item view.
+   ```
+   %pip install "openai==1.70.0" 
+   ```
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
+   ![](./media/new22.png)
 
-2.  Select the **...** option under the workspace name and
-    select **Workspace settings**.
+1. In your notebook, use the **+ Code** icon below the output of last cell to add a new code cell to the notebook.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image74.png)
+1. Enter the following code in the cell **(1)**. Select the code cell and click on the **Run cell (2)** button to execute cell.
 
-3.  Select **Other** and **Remove this workspace.**
+   ```
+   %pip install httpx==0.27.2 
+   ```
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image75.png)
+   ![](./media/image70.png)
 
-4.  Click on **Delete** in the warning that pops up.
+1. In your notebook, use the **+ Code** icon below the output of last cell to add a new code cell to the notebook.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image76.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image77.png)
+1. Enter the following code in the cell and replace the **URL** with **Published URL** which you copied in the **Task 5 Step 6**, then select the code cell and click on the **Run cell (3)** button to execute cell.
 
-**Summary:**
+   ```
+   import requests
+   import json
+   import pprint
+   import typing as t
+   import time
+   import uuid
 
-In this lab, you learned how to unlock the power of conversational
-analytics using Microsoft Fabric’s Data Agent. You configured a Fabric
-workspace, ingested structured data into a lakehouse, and set up an AI
-skill to translate natural language questions into SQL queries. You also
-enhanced the AI agent’s capabilities by providing instructions and
-examples to refine query generation. Finally, you called the agent
-programmatically from a Fabric notebook, demonstrating end-to-end AI
-integration. This lab empowers you to make enterprise data more
-accessible, usable, and intelligent for business users through natural
-language and generative AI technologies.
+   from openai import OpenAI
+   from openai._exceptions import APIStatusError
+   from openai._models import FinalRequestOptions
+   from openai._types import Omit
+   from openai._utils import is_given
+   from synapse.ml.mlflow import get_mlflow_env_config
+   from sempy.fabric._token_provider import SynapseTokenProvider
 
+   base_url = "https://api.fabric.microsoft.com/v1/workspaces/989ec440-4aca-4a01-b19b-ba778325c043/dataagents/fa0d717a-6457-405c-8856-25bd4aabdd6a/aiassistant/openai"
+   question = "What datasources do you have access to?"
+
+   configs = get_mlflow_env_config()
+
+   # Create OpenAI Client
+   class FabricOpenAI(OpenAI):
+       def __init__(
+           self,
+           api_version: str = "2024-05-01-preview",
+           **kwargs: t.Any,
+       ) -> None:
+           self.api_version = api_version
+           default_query = kwargs.pop("default_query", {})
+           default_query["api-version"] = self.api_version
+
+           super().__init__(
+               api_key="",
+               base_url=base_url,
+               default_query=default_query,
+               **kwargs,
+           )
+
+       def _prepare_options(self, options: FinalRequestOptions) -> None:
+           headers: dict[str, str | Omit] = (
+               {**options.headers} if is_given(options.headers) else {}
+           )
+           options.headers = headers
+
+           headers["Authorization"] = f"Bearer {configs.driver_aad_token}"
+
+           if "Accept" not in headers:
+               headers["Accept"] = "application/json"
+
+           if "ActivityId" not in headers:
+               correlation_id = str(uuid.uuid4())
+               headers["ActivityId"] = correlation_id
+
+           return super()._prepare_options(options)
+
+   # Pretty printing helper
+   def pretty_print(messages):
+       print("---Conversation---")
+       for m in messages:
+           print(f"{m.role}: {m.content[0].text.value}")
+       print()
+
+   fabric_client = FabricOpenAI()
+
+   # Create assistant
+   assistant = fabric_client.beta.assistants.create(model="not used")
+
+   # Create thread
+   thread = fabric_client.beta.threads.create()
+
+   # Create message on thread
+   message = fabric_client.beta.threads.messages.create(
+       thread_id=thread.id,
+       role="user",
+       content=question,
+   )
+
+   # Create run
+   run = fabric_client.beta.threads.runs.create(
+       thread_id=thread.id,
+       assistant_id=assistant.id,
+   )
+
+   # Wait for run to complete
+   while run.status in ["queued", "in_progress"]:
+       run = fabric_client.beta.threads.runs.retrieve(
+           thread_id=thread.id,
+           run_id=run.id,
+       )
+       print(run.status)
+       time.sleep(2)
+
+   # Print messages
+   response = fabric_client.beta.threads.messages.list(
+       thread_id=thread.id,
+       order="asc",
+   )
+   pretty_print(response)
+
+   # Delete thread
+   fabric_client.beta.threads.delete(thread_id=thread.id)
+   ```
+   
+   ![](./media/new23.png)
+
+   ![](./media/new24.png)
+
+## Summary:
+
+In this lab, you learned how to unlock the power of conversational analytics using Microsoft Fabric’s Data Agent. You configured a Fabric workspace, ingested structured data into a lakehouse, and set up an AI skill to translate natural language questions into SQL queries. You also enhanced the AI agent’s capabilities by providing instructions and examples to refine query generation. Finally, you called the agent programmatically from a Fabric notebook, demonstrating end-to-end AI integration. This lab empowers you to make enterprise data more accessible, usable, and intelligent for business users through natural language and generative AI technologies.
+
+### You have successfully completed the lab. Click on Next >> to proceed with the next lab.
+
+![Start Your Azure Journey](../masterdoc/media/next.jpg)
