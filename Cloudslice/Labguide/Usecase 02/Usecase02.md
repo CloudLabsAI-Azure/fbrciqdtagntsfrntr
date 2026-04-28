@@ -53,7 +53,7 @@ data‑driven answers instantly.
 
 In this task, you will create a new Lakehouse and populate it with AdventureWorks tables using a Fabric notebook, establishing a structured data foundation that the Data Agent can query.
 
-1. In the workspace home page, click on the **+New item** button in the navigation bar t create a new lakehouse.
+1. In the workspace home page, click on the **+New item** button in the navigation bar create a new lakehouse.
 
     ![](./media/image15.png)
 

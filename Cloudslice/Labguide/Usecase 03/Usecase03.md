@@ -1,6 +1,6 @@
-## Usecase 03- Build Fabric Data Agent using Mirrored Azure SQL Database in Microsoft Fabric
+# Usecase 03- Build Fabric Data Agent using Mirrored Azure SQL Database in Microsoft Fabric
 
-**Introduction**
+## Introduction
 
 Modern organizations require intelligent systems that can quickly
 analyze operational data and provide meaningful insights without complex
@@ -20,58 +20,14 @@ intelligent agents, allowing faster insights into product performance,
 customer distribution, and sales trends without writing complex SQL
 queries.
 
-**Objective**
+## Lab Objectives
 
-The objective of this lab is to demonstrate how to build and configure a
-Fabric Data Agent that can analyze mirrored operational data from an
-Azure SQL Database.
+In this lab, you will complete the following tasks:
 
-By completing this lab, you will learn how to:
-
-- Create an **Azure SQL Database** with sample data.
-
-- Create a **Microsoft Fabric workspace** to host data and analytics
-  resources.
-
-- Mirror an **Azure SQL Database into Microsoft Fabric** using Azure SQL
-  Mirroring.
-
-- Configure a **Fabric Data Agent** and connect it to the mirrored
-  database.
-
-- Query the data using **natural language prompts** to generate
-  insights.
-
-- Validate the agent responses using sample analytical questions.
-
-## **Task 0: Sync Host environment time**
-
-1.  In your VM, navigate and click in the **Search bar**, type
-    **Settings** and then click on **Settings** under **Best match**.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image1.png)
-
-2.  On Settings window, navigate and click on **Time & language**.
-
-![A screenshot of a computer Description automatically
-generated](./media/image2.png)
-
-3.  On **Time & language** page, navigate and click on **Date & time**.
-
-![A screenshot of a computer Description automatically
-generated](./media/image3.png)
-
-4.  Scroll down and navigate to **Additional settings** section, then
-    click on **Syn now** button. It will take 3-5 minutes to syn.
-
-![A screenshot of a computer Description automatically
-generated](./media/image4.png)
-
-5.  Close the **Settings** window.
-
-![A screenshot of a computer Description automatically
-generated](./media/image5.png)
+- Task 1: Create a single database - Azure SQL Database
+- Task 2: Create a Solution to Mirror Data using Azure SQL Mirroring
+- Task 3: Create a Data Agent and Connect the Mirrored Database
+- Task 4: Test the agent and Validate the agent responses using sample analytical questions.
 
 ## Task 1: Create a single database - Azure SQL Database
 
@@ -80,263 +36,243 @@ sample data. You will deploy the AdventureWorksLT sample schema, verify
 tables, and prepare your server connection details for later mirroring
 in Fabric.
 
-1.  Open a browser go to +++https://portal.azure.com+++ and sign in with
-    your cloud slice account below.
-    |   |   |
-    |---|---|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+1. On your LabVM, click on **Azure Portal** icon to navigate to the azure portal.
 
-3.  From the Azure portal home page, click on **Azure portal
-    menu** represented by three horizontal bars on the left side of the
-    Microsoft Azure command bar. Select SQL database
+    ![Enter Your Username](./media/uc2-0.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image6.png)
+1. You'll see the **Sign into Microsoft Azure** tab. Here, enter your **Email** **(1)** and select **Next (2)**:
 
-3.  Click on **+ Create**
+    - **Email/Username:** <inject key="AzureAdUserEmail"></inject>
 
-> ![](./media/image7.png)
+        ![Enter Your Username](./media/odlusr.png)
 
-4.  On **Create a storage account** window, under the **Basics** tab,
-    enter the below details to create a storage account and then click
-    on **Next:Networking**
+1. Next, provide your **Password** **(1)** and click on **Sign in (2)**:
 
-| Setting | Value  |
-|--------|----------------|
-| Subscription | Select your subscription |
-| Resource group | Select your Resource group |
-| Database name | +++sqldatabaseXXXX+++ *(XXXX = last 4 digits of Lab Instance ID)* |
-| Server | Select **Create new** |
-| Server name | +++sqlserverXXXX+++ |
-| Location | Southeast Asia |
-| Server admin login | +++sqladmin+++ |
-| Password | `+++password321!+++` |
-| Confirm password | `+++password321!+++` |
-| Action | Click **OK** |
+     - **Password:** <inject key="AzureAdUserPassword"></inject>
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image8.png)
+        ![Enter Your Password](./media/password.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image9.png)
+1. In the Azure portal search bar, search for **Azure SQL Database (1)** and select it from the results **Azure SQL Database (2)**.
 
-5.  In the Compute + Storage section, click on **Configure database**.
+    ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/azure-sql-database.png)
 
-![](./media/image10.png)
+1. On the **SQL databases** page, click **+ Create (1)** and then select **SQL database (2)** to open the configuration page for creating a new database.
 
-6.  For Service tier from the dropdown select **Standard(Budget
-    Friendly) and for DTU enter 100 **and click** Apply**
+    ![](./media/uc2-1.png)
 
-![](./media/image11.png)
+1. On **Create SQL Database** window, under the **Basics** tab, enter the following details:
 
-![](./media/image12.png)
+    | Setting | Value |
+    |--------|-------|
+    | **Subscription** | Leave as default **(1)** |
+    | **Resource group** | Select **lab-vm rg (2)**  |
+    | **Database name** | **sqldatabase-<inject key="DeploymentID" enableCopy="false"></inject> (3)** |
+    | **Server** | Select **Create new** (4) |
 
-7.  On the **Networking** tab, select **Public endpoint**, set **Allow
-    Azure services and resources** to **Yes**, enable **Add current
-    client IP address**, and then click **Next: Security\>**
+    ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/uc2-2.png)
 
-![](./media/image13.png)
+1. On **Create a SQL Database Server** window, enter the following server and authentication details, and click **OK (7).**
 
-8.  On the **Security** page, after reviewing, select **Next :
-    Additional settings**
+    | Setting | Value |
+    |--------|-------|    
+    | **Server name** | **sqlserver<inject key="DeploymentID" enableCopy="false"></inject> (1)** |
+    | **Location** | <inject key="Region" enableCopy="false" ></inject> **(2)** |
+    |**Authentication method**| **Use SQL Authentication (3)** |
+    | **Server admin login** | **sqladmin (4)** |
+    | **Password** | `password321!` **(5)** |
+    | **Confirm password** | `password321!` **(6)** |
 
-> ![](./media/image14.png)
+    ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/uc2-3.png)
 
-9.  On the *Additional settings* tab, select **Sample** under *Use
-    existing data*, choose **AdventureWorksLT** when prompted, click
-    **OK**, and then select **Review + create** to proceed.
+1. In the Compute + Storage section, click on **Configure database (1)**.
 
-> ![](./media/image15.png)
+    ![](./media/image10.png)
 
-10. On the **Review + create** page, after reviewing, select **Create**
+1. For Service tier from the dropdown select **Standard(Budget Friendly) (1)** and for **DTUs enter 100 (2)** and click **Apply (3).**
 
-> ![](./media/image16.png)
->
-> ![](./media/image17.png)
+    ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/uc2-4.png)
 
-11. On **Microsoft.SQLDatabase** window, after the deployment is
-    completed, click on the **Go to resource** button.
+1. Verify that the **Compute + Storage** is updated to **Standard S3 (1)** SKU, click **Next : Networking > (2)**.
 
-> ![](./media/image18.png)
+    ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/uc2-5.png)
 
-12. In SQL database page select **Query editor**.
+1. On the **Networking** tab, enable the following configurations and then click **Next: Security > (4).**
 
-> ![](./media/image19.png)
+    - Connectivity method: select **Public endpoint (1)** 
+    - **Allow Azure services and resources to access this server:** Set to **Yes (2)** 
+    - **Add current client IP address:** Set to **Yes (3)** 
 
-13. In the **Query editor (preview)**, enter the SQL
-    server **login** as **sqladmin** and **password** as +++**password321!+++**,
-    then click **OK** to connect to the database.
+      ![](./media/uc2-6.png)
 
-> ![](./media/image20.png)
+1. On the **Security** tab, keep everything as default select **Next : Additional settings >**
 
-14. Make sure all the sample tables have been successfully
-    deployed.![](./media/image21.png)
+1. On **Additional settings** tab, select **Sample (1)** for **Use existing data** and click **OK (2)** for **AdventureWorksLT** dialog-box, then click **Review + create (3)**.
 
-15. Go back to your SQL Database. Copy **Server name** (1) and **SQL
-    Database name** (2), paste them in a notepad, and then **Save** the
-    notepad to use the information in the upcoming task.
+    ![](./media/uc2-7.png)
 
-> ![](./media/image22.png)
+1. On the **Review + create** page, after reviewing, select **Create.**
 
-1.  Click **Home** to return to the main page
+    ![](./media/uc2-8.png)
 
-> ![](./media/image23.png)
+11. Once the deployment is completed, click on the **Go to resource** button.
 
-2.  Click on **Resource groups**.
+    ![](./media/uc2-9.png)
 
-> ![](./media/image24.png)
+12. In SQL database page select **Query editor (preview) (1)** from the left navigation. In the **Query editor**, click **Classic experience (2)** to switch to classic Query editor.
 
-3.  Click on the **ResourceGroup1** resource group.
+    ![](./media/uc2-10.png)
 
-> ![](./media/image25.png)
+1. Enter the following credentials to authenticate to **SQL Server**, then click **OK (3)**.
 
-4.  Select **SQL server**
+    - **Login (1)**: 
 
-> ![](./media/image26.png)
+        ```
+        sqladmin 
+        ```
 
-5.  Navigate to Identity, switch the System assigned managed identity
-    status to **On**, and then click **Save** to apply the change.
+    - **Password (2)**:
+    
+        ```
+        password321!
+        ```
 
-> ![](./media/image27.png)
->
-> ![](./media/image28.png)
+       ![](./media/uc2-11.png)
 
-## Task 2: Create a Fabric workspace
+1. Make sure all the sample tables have been successfully deployed.
 
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
+    ![](./media/image21.png)
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following
-    URL:+++https://app.fabric.microsoft.com/+++ press the **Enter** button
-    and sign in with your credentials
+1. On SQL Database **Overview (1)** page, copy **Server name (2)** and **SQL Database name** **(3)** and paste them into the Notepad to use in the upcoming task.
 
-    |  |   |
-    |---|----|
-    |Username	|+++@lab.CloudPortalCredential(User1).Username+++|
-    |TAP	|+++@lab.CloudPortalCredential(User1).AccessToken+++|
+   ![](./media/uc2-12.png)
 
+1. In the Azure portal search bar, search for **Resource groups (1)** and select **Resource gropus (2)** from the results.
 
-2.  Fabric home page, select **+New workspace** tile.
+   ![](./media/ex1-0.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image29.png)
+1. Click on the **lab-vm** resource group from the resource group list. 
 
-3.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
+    ![](./media/uc2-13.png)
 
-| Property | Value |
-|---------|-------|
-| Name | +++FabricAgent-mirroringdatabase@lab.LabInstance.Id+++ |
-| Advanced | Under **License mode**, select **Fabric** |
-| Default storage format | Small dataset storage format |
-| Template apps | Check **Develop template apps** |
+1. Select **SQL server<inject key="DeploymentID" enableCopy="false"></inject>** resource from the resources list.
 
-> ![](./media/image30.png)
+    ![](./media/uc2-14.png)
 
-Note: To find your lab instant ID, select 'Help' and copy the instant
-ID.
+1. Navigate to **Identity(1)** from the left navigation, switch the System assigned managed identity status to **On (2)**, and then click **Save (3)** to apply the change.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image31.png)
->
-> ![](./media/image32.png)
+    ![](./media/uc2-15.png)
 
-4.  Wait for the deployment to complete. It takes 2-3 minutes to
-    complete.
-
-> ![](./media/image33.png)
-
-## Task 3: Create a Solution to Mirror Data using Azure SQL Mirroring
+## Task 2: Create a Solution to Mirror Data using Azure SQL Mirroring
 
 In this task, you will connect the Azure SQL Database to Microsoft
 Fabric using Azure SQL Mirroring. You will select tables, create the
 mirrored database, and validate that the data has synced successfully.
 
-1.  Create a new lakehouse by clicking on the **+New item** button in
-    the navigation bar
+1. On your virtual machine, open the **Microsoft Edge**.
+ 
+    ![01](./media/gs1.png)
+ 
+1.  In the new tab, navigate to the **Microsoft Fabric** portal by copying and pasting the following URL into the address bar.
 
-![](./media/image34.png)
+      ```
+      https://app.fabric.microsoft.com
+      ```
 
-1.  In the **Filter by keyword** search box, enter **+++Mirroed Azure
-    SQL Database+++** and select the **Mirroed Azure SQL Database**
-    item.
+1. On the **Enter your email, we'll check if you need to create a new account** tab, you will see the login screen, in that enter the following email/username, and click on **Submit (2)**.
 
-![](./media/image35.png)
+   - **Email/Username:** <inject key="AzureAdUserEmail"></inject> **(1)**
+ 
+        ![01](./media/uc1-0.png)
+ 
+1. Next, provide your Temporary Access Password **(1)** and click on **Sign in (2)**:
+ 
+   - **Temprory Access Pass:** <inject key="AzureAdUserPassword"></inject>
+ 
+       ![01](./media/new-9.png)
 
-2.  In the **Choose a database connection to get started** window,
-    select **Azure SQL database**
+1. If you see the pop-up Stay Signed in?, select **No**.
+   
+    ![01](./media/gs2.png)
 
-![](./media/image36.png)
+1. In the navigation bar, click on the **+ New item** button within the workspace **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject>**.
 
-3.  In Connection settings tab enter the below detail and click on
-    Connect button
+    ![](./media/image15.png)
 
-| Field | Value |
-|------|-------|
-| Server | SQL server URL saved in **Task 2 → Step 15** |
-| Database | Enter your SQL database |
-| Username | +++sqladmin+++ |
-| Password | +++password321!+++ |
+1. In the **Filter by keyword** search box, enter **Mirrored Azure SQL Database (1)** and select the **Mirrored Azure SQL Database (2)**
+item.
 
-![](./media/image37.png)
+    ![](./media/sql-database-1.png)
 
-7.  In the **Choose data** window, select **Select all** and click on
-    **Connect** button
+1. In the **Choose a database connection to get started** window, select **Azure SQL database**
 
-> ![](./media/image38.png)
+    ![](./media/image36.png)
 
-8.  In the Destination tab, click on **Create mirrored database**
+1. In Connection settings tab enter the below detail and click on Connect button
 
-> ![](./media/image39.png)
+    | Setting   | Value |
+    |-----------|-------|
+    | **Server**   | Enter the Server name that you pasted in Task 1 Step 19 **(1)** |
+    | **Database** | Enter **sqldatabase-<inject key="DeploymentID" enableCopy="false"></inject>** **(2)** |
+    | **Username** | Enter `sqladmin` **(3)**|
+    | **Password** | Enter `password321!` **(4)** |
+    |**Connect**| Click on Connect **(5)**
 
-9.  Click **Refresh** to update and view the latest changes.
+    ![](./media/uc2-16.png)
 
-> ![](./media/image40.png)
->
-> ![](./media/image41.png)
+1. In the **Choose data** window, select **Select all (1)** and click on **Connect (2)** button
 
-1.  In the left-sided navigation menu, navigate and click on
-    ***FabricAgent-mirroringdatabaseXXXX***, as shown in the below
-    image.
+    ![](./media/uc2-17.png)
 
-> ![](./media/image42.png)
+1. In the Destination tab, click on **Create mirrored database**
 
-## Task 4: Create a Data Agent and Connect the Mirrored Database
+    ![](./media/uc2-18.png)
 
-Here, you will create a new Fabric Data Agent and configure it to use
+1. Click **Refresh** to update and view the latest changes.
+
+    ![](./media/image40.png)
+
+    ![](./media/image41.png)
+
+## Task 3: Create a Data Agent and Connect the Mirrored Database
+
+In this task, you will create a new Fabric Data Agent and configure it to use
 the mirrored Azure SQL Database as its data source. This agent will
 respond to natural language prompts using the mirrored data.
 
-1.  In the **Fabric** home page, select **+New item.**
+1. In the left-sided navigation menu, navigate and click on **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject>**.
 
-![](./media/image43.png)
+    ![](./media/uc2-20.png)
 
-3.  In the **Filter by item type** search box, enter **+++data agent+++** and select the **Data agent.**
+1. In the **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject>** workspace home page, select **+ New item.**
 
-> ![](./media/image44.png)
+    ![](./media/uc2-21.png)
 
-4.  Enter **+++FabricDataAgent@lab.LabInstance.Id+++** as the Data
-    agent name and select **Create**.
+1. In New item pane, seacrch for **Data agent (1)** and select the **Data agent (2)**
 
-> ![](./media/image45.png)
+    ![](./media/data-agent.png)
 
-5.  Select **Add data source** to configure a new data source.
+1. Enter **FabricDataAgent-<inject key="DeploymentID" enableCopy="false"></inject>** **(1)** as the Data agent name and select **Create (2)**.
 
-> ![](./media/image46.png)
+    ![](./media/uc2-22.png)
 
-6.  Select your Mirrored database resource for this workshop
+1. Select **Add data source** to configure a new data source.
 
-> ![](./media/image47.png)
->
-> ![](./media/image48.png)
+    ![](./media/image46.png)
 
-## Task 5: Test the agent
+1. Select **sqldatabse-<inject key="DeploymentID" enableCopy="false"></inject> (1)** Mirrored database resource, then click **Add (2).**
 
-You will test the Data Agent by asking analytical questions like:
+    ![](./media/uc2-23.png)
+
+    ![](./media/uc2-24.png)
+
+## Task 4: Test the agent and Validate the agent responses using sample analytical questions.
+
+In this task, you will test the Data Agent by asking analytical questions like:
 
 - Which product categories generate the highest sales?
 
@@ -347,95 +283,55 @@ You will test the Data Agent by asking analytical questions like:
 This validates the agent’s ability to understand and respond to business
 queries.
 
-1.  Select the **SalesLT** schema for all tables.
+1 Expand the **sqldatabse-<inject key="DeploymentID" enableCopy="false"></inject> (1)**, navigate through **Schemas (2) → SalesLT (3) → Tables (4)**, and **select all (5)** the tables.
 
-2.  In the query panel of your Fabric data agent, type the question
-    **+++Which product categories generate the highest sales?+++** and
-    click the Send icon to view the agent’s response
+1. Enter the following **question (6)** in the query box: 
 
-![](./media/image49.png)
+    ```
+    Which product categories generate the highest sales?
+    ```
 
-![](./media/image50.png)
+1. Review the response (**7)**, which lists the top product categories along with their total sales amounts (e.g., Category ID 7, 6, and 5 as the highest).
 
-3.  To test the agent, run the application and enter the sample
-    questions to verify the responses.
+    ![](./media/uc2-25.png)
 
-++++List products with high list price but low sales volume.+++
+1.  To test the agent, run the application and enter the sample questions to verify the responses.
 
-![](./media/image51.png)
+    ```
+    List products with high list price but low sales volume. 
+    ```
 
-![](./media/image52.png)
+    ![](./media/image51.png)
 
-+++**List the cities with the highest number of customers**+++
+    ![](./media/image52.png)
 
-![](./media/image53.png)
+1. Similarly, enter the following **question** in the query box: 
 
-> ![](./media/image54.png)
+    ```
+     List the cities with the highest number of customers
+    ```
 
-4.  Click **Agent instructions** from top menu.
+    ![](./media/image53.png)
 
-![](./media/image55.png)
+    ![](./media/image54.png)
 
-5.  Click Publish from the top menu and select **Publish**.
+1.  Click **Agent instructions** from top menu.
 
-![](./media/image56.png)
+    ![](./media/image55.png)
 
-![](./media/image57.png)
+1.  Click Publish from the top menu and select **Publish**.
 
-![](./media/image58.png)
+    ![](./media/image56.png)
 
-6.  Now, click on **FabricAgent-mirroringdatabaseXXXXXX** on the
-    left-sided navigation pane.
+    ![](./media/publish.png)
 
-![](./media/image59.png)
+    ![](./media/image58.png)
 
-## Task 6: Delete the Resources
+1.  Now, click on **Fabric Data agent-<inject key="DeploymentID" enableCopy="false"></inject>** on the left-sided navigation pane.
 
-1.  Select the **...** option under the workspace name and
-    select **Workspace settings**.
+    ![](./media/workspace-fabric.png)
 
-> ![](./media/image60.png)
-
-2.  Select **General** and **Remove this workspace.**
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image61.png)
-
-3.  Click on **Delete** in the warning that pops up.
-
-> ![](./media/image62.png)
-
-4.  Wait for a notification that the Workspace has been deleted, before
-    proceeding to the next lab.
-
-> ![](./media/image63.png)
-
-7.  Open a browser go to +++https://portal.azure.com+++ and sign in with
-    your cloud slice account below.
-
-8.  To delete resources , type **Resource groups** in the Azure portal
-    search bar, navigate and click on **Resource
-    groups** under **Services**.
-
-![A screenshot of a computer Description automatically
-generated](./media/image64.png)
-
-9.  In the Resource groups page, select your resource group.
-
-10. On the **Resource Group** home page, select all resources except
-    **Fabric Capacity**, and then click **Delete**.
-
-![](./media/image65.png)
-
-11. In the **Delete Resources** pane that appears on the right side,
-    navigate to **Enter “delete” to confirm deletion** field, then click
-    on the **Delete** button
-
-![](./media/image66.png)
-
-![](./media/image67.png)
-
-**Summary**
+## Summary
 
 In this lab, you successfully created an Azure SQL Database and mirrored
 its data into Microsoft Fabric using Azure SQL Mirroring. You then
@@ -449,7 +345,7 @@ demonstrates how Microsoft Fabric can integrate operational data sources
 with intelligent agents to simplify data exploration and enable faster
 business insights.
 
-This use case highlights the power of combining **data mirroring and
-AI-powered data agents** to create interactive and intelligent data
+This use case highlights the power of combining **data mirroring and AI-powered data agents** to create interactive and intelligent data
 experiences within the Microsoft Fabric ecosystem.
 
+### Congratulations! You have successfully completed the lab.
