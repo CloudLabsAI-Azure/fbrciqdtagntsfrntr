@@ -1,0 +1,20 @@
+[
+    {
+        "Name": "Day 02: Frontier Microsoft Fabric : Fabric IQ + Fabric Data Agents",
+        "Language": "English",
+        "Files": [
+          {
+            "RawFilePath": "https://raw.githubusercontent.com/CloudLabsAI-Azure/fbrcdatagntsdepth/refs/heads/main/Cloud-slice/Labguides/masterdoc/getting-started-page.md",
+            "Order": 1
+          },
+          {
+            "RawFilePath": "https://raw.githubusercontent.com/CloudLabsAI-Azure/fbrcdatagntsdepth/refs/heads/main/Cloud-slice/Labguides/Usecase%2003/Usecase03.md",
+            "Order": 2
+          },
+          {
+            "RawFilePath": "https://raw.githubusercontent.com/CloudLabsAI-Azure/fbrcdatagntsdepth/refs/heads/main/Cloud-slice/Labguides/Usecase%2004/Usecase04.md",
+            "Order": 3
+          }
+        ]
+    }
+]
